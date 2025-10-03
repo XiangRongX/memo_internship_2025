@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Arrow : MonoBehaviour
 {
@@ -15,7 +16,7 @@ public class Arrow : MonoBehaviour
     public float lifetimeOnWall = 7f; // 停留时间
     public float blinkDuration = 2f;  // 闪烁时间
 
-    private bool stuck = false;
+    private Collider2D playerCol;
 
     private void Awake()
     {
@@ -27,11 +28,15 @@ public class Arrow : MonoBehaviour
         rb.freezeRotation = true;
     }
 
-    public void Launch(Vector2 direction, float speed, bool facingRight)
+    public void Launch(Vector2 direction, float speed, bool facingRight, Collider2D playerCollider)
     {
         sr.sprite = facingRight ? arrowRight : arrowLeft;
         rb.velocity = direction * speed;
         rb.gravityScale = 0.5f;
+
+        playerCol = playerCollider;
+        // 飞行时忽略和玩家的碰撞
+        Physics2D.IgnoreCollision(playerCol, col, true);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -54,15 +59,21 @@ public class Arrow : MonoBehaviour
         // 碰到墙或地面 -> 插入
         if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Wall"))
         {
-            stuck = true;
-
             rb.velocity = Vector2.zero;
             rb.isKinematic = true;
             rb.freezeRotation = true;
 
+            // 恢复和玩家的碰撞
+            if (playerCol != null)
+            {
+                Physics2D.IgnoreCollision(playerCol, col, false);
+            }
+
             // 添加单向平台组件
             if (GetComponent<PlatformEffector2D>() == null)
+            {
                 gameObject.AddComponent<PlatformEffector2D>();
+            }  
 
             StartCoroutine(ArrowLifetime());
         }

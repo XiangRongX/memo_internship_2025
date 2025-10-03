@@ -9,13 +9,11 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
     private bool isGrounded;
 
-    // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         //AD  A=-1 D=1
@@ -29,18 +27,29 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnCollisionStay2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Ground"))
+        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Arrow"))
         {
-            isGrounded = true;
+            bool grounded = false;
+            foreach (ContactPoint2D contact in collision.contacts)
+            {
+                // 只要有一个点在脚下，就算落地
+                if (contact.normal.y > 0.5f)
+                {
+                    grounded = true;
+                    break;
+                }
+            }
+            isGrounded = grounded;
         }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Ground"))
+        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Arrow"))
         {
+            // 离开这个物体后，可能还在另一个物体上，所以要检测当前所有接触
             isGrounded = false;
         }
     }

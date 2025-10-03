@@ -11,13 +11,13 @@ public class PlayerShoot : MonoBehaviour
 
     private bool facingRight = true;
 
-    // Start is called before the first frame update
+    private Collider2D col;
+
     void Start()
     {
-        
+        col = GetComponent<Collider2D>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if(Input.GetKeyDown(KeyCode.Space))
@@ -37,6 +37,6 @@ public class PlayerShoot : MonoBehaviour
         
         Arrow arrowScript = arrow.GetComponent<Arrow>();
         Vector2 direction = facingRight ? Vector2.right : Vector2.left;
-        arrowScript.Launch(direction, arrowSpeed, facingRight);
+        arrowScript.Launch(direction, arrowSpeed, facingRight, col);
     }
 }
