@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5423729149452663379}
   - component: {fileID: 6455004982207901728}
   m_Layer: 0
-  m_Name: NormalPalettte
+  m_Name: NormalPlatformPalettte
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -435,7 +435,7 @@ TilemapRenderer:
   m_Mode: 0
   m_DetectChunkCullingBounds: 0
   m_MaskInteraction: 0
---- !u!114 &6259214197781911685
+--- !u!114 &7963906220185336889
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
