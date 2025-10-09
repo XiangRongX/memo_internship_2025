@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class MapWarpManager : MonoBehaviour
@@ -10,29 +8,81 @@ public class MapWarpManager : MonoBehaviour
     public float bottomBound = -10f;
     public float topBound = 10f;
 
+    [Header("Tags to Wrap")]
+    public string playerTag = "Player";
+    public string[] enemyTags = { "Slime", "BlueMob", "BlackMob" };
+
     private Transform player;
+    private Rigidbody2D playerRb;
 
     void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player").transform;
+        // 找到玩家
+        GameObject playerObj = GameObject.FindGameObjectWithTag(playerTag);
+        if (playerObj != null)
+        {
+            player = playerObj.transform;
+            playerRb = playerObj.GetComponent<Rigidbody2D>();
+        }
     }
 
     void LateUpdate()
     {
-        Vector3 pos = player.position;
+        // 玩家循环
+        if (player != null)
+            WrapObject(player, playerRb);
 
-        // 左右循环
-        if (pos.x < leftBound) pos.x = rightBound;
-        else if (pos.x > rightBound) pos.x = leftBound;
+        // 敌人循环
+        foreach (string tag in enemyTags)
+        {
+            GameObject[] enemies = GameObject.FindGameObjectsWithTag(tag);
+            foreach (GameObject enemy in enemies)
+            {
+                if (enemy == null) continue;
 
-        // 上下循环
-        if (pos.y < bottomBound) pos.y = topBound;
-        else if (pos.y > topBound) pos.y = bottomBound;
-
-        player.position = pos;
+                Rigidbody2D rb = enemy.GetComponent<Rigidbody2D>();
+                WrapObject(enemy.transform, rb);
+            }
+        }
     }
 
-    // 可视化地图边界
+    private void WrapObject(Transform obj, Rigidbody2D rb)
+    {
+        Vector3 pos = obj.position;
+        bool warped = false;
+
+        // 左右循环
+        if (pos.x < leftBound)
+        {
+            pos.x = rightBound;
+            warped = true;
+        }
+        else if (pos.x > rightBound)
+        {
+            pos.x = leftBound;
+            warped = true;
+        }
+
+        // 上下循环
+        if (pos.y < bottomBound)
+        {
+            pos.y = topBound;
+            warped = true;
+            if (rb != null)
+                rb.velocity = new Vector2(rb.velocity.x, 0f);
+        }
+        else if (pos.y > topBound)
+        {
+            pos.y = bottomBound;
+            warped = true;
+            if (rb != null)
+                rb.velocity = new Vector2(rb.velocity.x, 0f);
+        }
+
+        if (warped)
+            obj.position = pos;
+    }
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;

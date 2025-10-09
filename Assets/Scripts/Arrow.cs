@@ -12,11 +12,17 @@ public class Arrow : MonoBehaviour
     public Sprite arrowLeft;
     public Sprite arrowRight;
 
+    public AudioClip hitClip;
+    public AudioClip killClip;
+    public float volume = 1f;
+
     [Header("Arrow Settings")]
     public float lifetimeOnWall = 7f; // 停留时间
     public float blinkDuration = 2f;  // 闪烁时间
 
     private Collider2D playerCol;
+
+    public bool isFlying = true;
 
     private void Awake()
     {
@@ -49,19 +55,22 @@ public class Arrow : MonoBehaviour
         }
 
         // 碰到敌人
-        if (collision.gameObject.CompareTag("Enemy"))
+        if (collision.gameObject.CompareTag("Enemy") && isFlying == true)
         {
-            Destroy(collision.gameObject);
-            Destroy(gameObject);
+            AudioSource.PlayClipAtPoint(killClip, Camera.main.transform.position, volume);
+            Destroy(gameObject);  // 伤害逻辑由敌人负责
             return;
         }
 
         // 碰到墙或地面 -> 插入
         if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Wall"))
         {
+            AudioSource.PlayClipAtPoint(hitClip, Camera.main.transform.position, volume);
             rb.velocity = Vector2.zero;
             rb.isKinematic = true;
             rb.freezeRotation = true;
+
+            isFlying = false;
 
             // 恢复和玩家的碰撞
             if (playerCol != null)
