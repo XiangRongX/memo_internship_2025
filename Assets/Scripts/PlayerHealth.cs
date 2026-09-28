@@ -22,6 +22,7 @@ public class PlayerHealth : MonoBehaviour
     private SpriteRenderer sr;
     private Rigidbody2D rb;
     private InvulnerableAbility invulnerableAbility;
+    private bool damageInvulnerable = false; //  ‹…ÀŒﬁµ–
     private Animator anim;
 
 
@@ -37,14 +38,7 @@ public class PlayerHealth : MonoBehaviour
 
     private void Update()
     {
-        if (!isInvulnerable)
-        {
-            if (invulnerableAbility != null && invulnerableAbility.IsInvulnerable())
-            {
-                isInvulnerable = true;
-            }
-        }
-            
+        isInvulnerable = damageInvulnerable || (invulnerableAbility != null && invulnerableAbility.IsInvulnerable());
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -102,7 +96,7 @@ public class PlayerHealth : MonoBehaviour
 
     private IEnumerator InvulnerabilityCoroutine()
     {
-        isInvulnerable = true;
+        damageInvulnerable = true;
         float timer = 0f;
 
         while (timer < invulnerableTime)
@@ -112,8 +106,8 @@ public class PlayerHealth : MonoBehaviour
             timer += blinkInterval;
         }
 
-        sr.enabled = true; 
-        isInvulnerable = false;
+        sr.enabled = true;
+        damageInvulnerable = false;
     }
 
     private void Die()

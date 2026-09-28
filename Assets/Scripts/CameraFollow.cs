@@ -6,13 +6,13 @@ public class CameraFollow : MonoBehaviour
 {
     public Transform player;
     public float smoothSpeed = 5f;
-    public Vector3 offset;  // Z = -10
+    public Vector3 offset;  // Z = -20
 
     private MapWarpManager map;
 
     private float leftBound;
     private float rightBound;
-    private float bottomBound ;
+    private float bottomBound;
     private float topBound;
 
     private void Start()
